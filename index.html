@@ -4893,7 +4893,21 @@ let db={
   tyres:[],
   componentRecords:[]
 };
-localStorage.setItem(KEY,JSON.stringify(db));
+try{
+  const saved=JSON.parse(localStorage.getItem(KEY)||"null");
+  if(saved && typeof saved==="object" && Array.isArray(saved.vehicles)){
+    db={...db,...saved};
+  }else{
+    localStorage.setItem(KEY,JSON.stringify(db));
+  }
+}catch(e){
+  localStorage.setItem(KEY,JSON.stringify(db));
+}
+if(!Array.isArray(db.serviceRecords))db.serviceRecords=[];
+if(!Array.isArray(db.maintenance))db.maintenance=[];
+if(!Array.isArray(db.maintenanceSchedules))db.maintenanceSchedules=[];
+if(!Array.isArray(db.parts))db.parts=[];
+if(!Array.isArray(db.tyres))db.tyres=[];
 if(!Array.isArray(db.componentRecords))db.componentRecords=[];
 function money(n){return"RM"+Number(n).toLocaleString("ms-MY",{minimumFractionDigits:2})}
 function render(){let q="",vs=db.vehicles.filter(v=>(v.brand+" "+v.model+" "+v.plate).toLowerCase().includes(q));let sum=db.vehicles.reduce((a,v)=>a+v.total,0);kpis.innerHTML=`<div class="kpi"><div class="kicon"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xNCA0MGw0LTE1YzEtNCA0LTcgOC03aDEyYzQgMCA3IDMgOCA3bDQgMTV2OEgxNHoiLz48cGF0aCBmaWxsPSIjMTczQjY4IiBkPSJNMjEgMjloMjJsLTItNmMwLTEtMS0yLTItMkgyNWMtMSAwLTIgMS0yIDJ6Ii8+PGNpcmNsZSBjeD0iMjIiIGN5PSI0NSIgcj0iNSIgZmlsbD0iIzE3M0I2OCIvPjxjaXJjbGUgY3g9IjQyIiBjeT0iNDUiIHI9IjUiIGZpbGw9IiMxNzNCNjgiLz48L3N2Zz4=" alt=""></div><div><small>Jumlah Kenderaan</small><strong>${db.vehicles.length} <span>/ 10 unit</span></strong></div></div><div class="kpi"><div class="kicon"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik00MiAxMWExMyAxMyAwIDAgMC05IDIxTDE1IDUwYTUgNSAwIDEgMCA3IDdsMTgtMThhMTMgMTMgMCAwIDAgMTItMTZsLTkgOS02LTYgOS05YTEzIDEzIDAgMCAwLTQtNnoiLz48L3N2Zz4=" alt=""></div><div><small>Jumlah Servis</small><strong>${db.vehicles.reduce((a,v)=>a+v.services,0)} <span>kali</span></strong></div></div><div class="kpi"><div class="kicon"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3QgeD0iOCIgeT0iMTciIHdpZHRoPSI0OCIgaGVpZ2h0PSIzMCIgcng9IjUiIGZpbGw9IndoaXRlIi8+PGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iOCIgZmlsbD0iIzE3M0I2OCIvPjxwYXRoIGZpbGw9IiMxNzNCNjgiIGQ9Ik0xNCAyM2g4djRoLTh6bTI4IDE0aDh2NGgtOHoiLz48L3N2Zz4=" alt=""></div><div><small>Jumlah Perbelanjaan</small><strong>${money(sum)}</strong></div></div><div class="kpi"><div class="kicon"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3QgeD0iMTAiIHk9IjM4IiB3aWR0aD0iOSIgaGVpZ2h0PSIxNiIgcng9IjIiIGZpbGw9IndoaXRlIi8+PHJlY3QgeD0iMjciIHk9IjI3IiB3aWR0aD0iOSIgaGVpZ2h0PSIyNyIgcng9IjIiIGZpbGw9IndoaXRlIi8+PHJlY3QgeD0iNDQiIHk9IjE2IiB3aWR0aD0iOSIgaGVpZ2h0PSIzOCIgcng9IjIiIGZpbGw9IndoaXRlIi8+PHBhdGggc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSI0IiBmaWxsPSJub25lIiBkPSJNMTAgMTRoNDQiLz48L3N2Zz4=" alt=""></div><div><small>Purata Kos / Kenderaan</small><strong>${money(sum/Math.max(db.vehicles.length,1))}</strong></div></div>`;const vehicleList=document.getElementById("vehicles");
